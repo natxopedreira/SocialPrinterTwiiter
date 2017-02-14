@@ -1,0 +1,4 @@
+*/bin/*
+*.xcodepro*
+*.plist
+*.xcc*
