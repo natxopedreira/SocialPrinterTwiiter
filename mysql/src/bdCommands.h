@@ -48,7 +48,7 @@ public:
     //--------------------------------------------------------------
     // abre la conexion con la base de datos
     void openDbConnection(){
-        db.ofxMySQL::connect("127.0.0.1", "root", "kalandraka", "socialPrinter");
+        db.ofxMySQL::connect("127.0.0.1", "root", "3mpathy", "socialPrinter");
     }
     
     

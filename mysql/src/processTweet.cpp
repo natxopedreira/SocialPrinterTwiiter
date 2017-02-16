@@ -38,8 +38,9 @@ processTweet::processTweet(){
     pantalla.end();
 }
 //--------------------------------------------------------------
-void processTweet::setImageDestinoMosaico(ofImage *img){
+void processTweet::setImageDestinoMosaico(ofImage *img, ofImage *imgPrint){
     imgDestinoMosaico = img;
+    imgDestinoMosaicoPrint = imgPrint;
 }
 
 
@@ -61,6 +62,17 @@ void processTweet::setPhotoSize(int _ancho, int _alto){
     fboThumb.end();
 }
 
+//--------------------------------------------------------------
+void processTweet::setPhotoSizeToPrint(int _ancho, int _alto){
+    anchoPrint = _ancho;
+    altoPrint = _alto;
+
+    fboThumbPrint.allocate(anchoPrint, altoPrint);
+
+    fboThumbPrint.begin();
+    ofClear(255,0);
+    fboThumbPrint.end();
+}
 
 //--------------------------------------------------------------
 ofPoint processTweet::getGridCellSize(){
@@ -206,25 +218,89 @@ void processTweet::processImage(shared_ptr<ofTexture>& tex, int new_w, int new_h
     
     
     bool ok = dabatase.setCellOcupada(lastTweet.recordId,cell.at(4));
-    
-    
-    if (lastTweet.posicionEnGrid.x>1920 || lastTweet.posicionEnGrid.y>1200) {
-        //
-        ofLogError("THUMB FUERA DE LA PANTALLA");
-        
-        cout<< "lastTweet.id " << lastTweet.recordId << endl;
-        cout<< "lastTweet.posicionEnGrid.x " << lastTweet.posicionEnGrid.x << endl;
-        cout<< "lastTweet.posicionEnGrid.y " << lastTweet.posicionEnGrid.y << endl;
-    }
-    
-    
-    
+
+
     myImage = tex;
     
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //// RESIZE IMAGE TO PRINT ////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////
+    ofPixels pxsPrint;
+    tex->readToPixels(pxsPrint);
+
+    float wP = pxsPrint.getWidth();
+    float hP = pxsPrint.getHeight();
+
+    int destXP = 0;
+    int destYP = 0;
+
+    int nuevoAnchoP = anchoPrint;
+    int nuevoAltoP = round(nuevoAnchoP*(hP/wP));
+
+    if(nuevoAltoP<altoPrint){
+        nuevoAltoP = altoPrint;
+        nuevoAnchoP = round(nuevoAltoP*(wP/hP));
+    }
+
+    if (nuevoAnchoP == anchoPrint) {
+        // sobra alto
+        if (nuevoAltoP>altoPrint) {
+            destYP = (nuevoAltoP-altoPrint)/2;
+        }
+    }
+
+    if (nuevoAltoP == altoPrint) {
+        // sobra ancho
+        if (nuevoAnchoP>anchoPrint) {
+            destXP = (nuevoAnchoP-anchoPrint)/2;
+        }
+    }
+
+    // refacemos el tamano
+    pxsPrint.resize(nuevoAnchoP, nuevoAltoP);
+    pxsPrint.crop(destXP/2, destYP/2, anchoPrint, altoPrint);
+
+
+    // volcamos a la imagen en bn
+    ofImage thumbPrint;
+    thumbPrint.setFromPixels(pxsPrint);
+    thumbPrint.setImageType(OF_IMAGE_GRAYSCALE);
+
+    ofEnableAlphaBlending();
+
+    ofPushStyle();
+    fboThumbPrint.begin();
+
+        ofSetColor(255,255,255,255);
+        // dibujamos la miniatura
+        thumb.draw(0,0);
+
+        ofSetColor(255,255,255,150);
+        // dibujamos la porcion de la imagen del mosaico
+        imgDestinoMosaicoPrint->drawSubsection(0, 0, nuevoAnchoP, nuevoAltoP,lastTweet.posicionEnGrid.x, lastTweet.posicionEnGrid.y);
+
+    fboThumbPrint.end();
+    ofPopStyle();
+
+    ofDisableAlphaBlending();
+
+    ofPixels volcadoFinalPrint;
+
+    fboThumbPrint.readToPixels(volcadoFinalPrint);
+
+    // guardamos la imagen pa imprimir
+    ofSaveImage(volcadoFinalPrint, "/home/natxo/SocialPrinterTwiiter/imagenes/impresion/" + lastTweet.destUrl);
+
+
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //// RESIZE IMAGE TO SCREEEN ///////////////////////////////////////////////////////////////////////////////
+    /// ////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ///
     ofPixels pxs;
     tex->readToPixels(pxs);
-    
-    
+
 
     float w = pxs.getWidth();
     float h = pxs.getHeight();
@@ -264,7 +340,7 @@ void processTweet::processImage(shared_ptr<ofTexture>& tex, int new_w, int new_h
     //thumb.setFromPixels(pxs, nuevoAncho, nuevoAlto, OF_IMAGE_GRAYSCALE);
     
     ofEnableAlphaBlending();
-    
+
     ofPushStyle();
     fboThumb.begin();
     
@@ -294,12 +370,10 @@ void processTweet::processImage(shared_ptr<ofTexture>& tex, int new_w, int new_h
     dabatase.checkTweetProcessed(lastTweet.recordId);
     lastTimeQuery = ofGetElapsedTimeMillis();
     
-    
-    
-    
-    // guardamos la imagen
-    //ofSaveImage(pxs, lastTweet.destUrl);
 
+
+    // guardamos la imagen
+    //ofSaveImage(pxs, "/home/natxo/SocialPrinterTwiiter/imagenes/" + lastTweet.destUrl);
 }
 
 

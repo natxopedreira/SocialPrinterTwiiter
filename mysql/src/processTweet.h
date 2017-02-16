@@ -60,12 +60,16 @@ class processTweet {
 private:
     
     ofImage * imgDestinoMosaico;
+    ofImage * imgDestinoMosaicoPrint;
     
     int photoAncho;
     int photoAlto;
     int windowWidth;
     int windowHeight;
     int celdasOcupadas;
+
+    int anchoPrint;
+    int altoPrint;
     
     long lastTimeQuery;
     
@@ -81,7 +85,7 @@ private:
     
 public:
     
-    void setImageDestinoMosaico(ofImage *img);
+    void setImageDestinoMosaico(ofImage *img, ofImage *imgPrint);
     
     bool processing;
     
@@ -91,10 +95,12 @@ public:
     
     void updateProcess();
     
+
     void createGridPositions(int columnas, int filas);
     void setWindowSize(int w, int h);
     
     void setPhotoSize(int _ancho, int _alto);
+    void setPhotoSizeToPrint(int _ancho, int _alto);
     
     vector<posiciones> getPosicionesGrid();
     
@@ -104,7 +110,7 @@ public:
     
     string debugData();
     
-    ofFbo fboThumb;
+    ofFbo fboThumb, fboThumbPrint;
     ofFbo pantalla;
     
     ofxAsyncTextureLoader loader;
