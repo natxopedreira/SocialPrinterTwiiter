@@ -12,9 +12,13 @@ Project{
         name: { return FileInfo.baseName(path) }
 
         files: [
-            'src/main.cpp',
-            'src/ofApp.cpp',
-            'src/ofApp.h',
+            "src/main.cpp",
+            "src/ofApp.cpp",
+            "src/ofApp.h",
+            "src/processTweet.h",
+            "src/processTweet.cpp",
+            "src/bdCommands.h",
+            "src/ofxImageSequenceRecorder.h"
         ]
 
         // This project is using addons.make to include the addons
@@ -22,19 +26,19 @@ Project{
         // the addons from the qbs file change the following lines to
         // the list of used addons in array format. eg:
         //
-        // of.addons: [
-        //     'ofxGui',
-        //     'ofxOpenCv',
-        // ]
+         of.addons: [
+             'ofxMySQL',
+             'ofxAsyncTextureLoader',
+         ]
 
         // additional flags for the project. the of module sets some
         // flags by default to add the core libraries, search paths...
         // this flags can be augmented through the following properties:
         of.pkgConfigs: []       // list of additional system pkgs to include
-        of.includePaths: []     // include search paths
+        of.includePaths: ['/usr/include/cups/']     // include search paths
         of.cFlags: []           // flags passed to the c compiler
         of.cxxFlags: []         // flags passed to the c++ compiler
-        of.linkerFlags: []      // flags passed to the linker
+        of.linkerFlags: ['/home/natxo/Documentos/of_v0.9.8_linux64_release/addons/ofxMySQL/libs/libmysql/lib/linux64/libmysqlclient.a','/usr/lib/x86_64-linux-gnu/libcups.so']      // flags passed to the linker
         of.defines: []          // defines are passed as -D to the compiler
         // and can be checked with #ifdef or #if in the code
         of.frameworks: []       // osx only, additional frameworks to link with the project

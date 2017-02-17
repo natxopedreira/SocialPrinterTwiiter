@@ -12,6 +12,7 @@
 #include "ofMain.h"
 #include "ofxAsyncTexture.h"
 #include "bdCommands.h"
+#include "ofxImageSequenceRecorder.h"
 
 /*
  get last tweet from db
@@ -82,6 +83,9 @@ private:
     
     
     void processImage(shared_ptr<ofTexture>& tex, int new_w, int new_h);
+
+
+
     
 public:
     
@@ -94,6 +98,8 @@ public:
     void getLastTweet();
     
     void updateProcess();
+
+    void limpiaPosiciones();
     
 
     void createGridPositions(int columnas, int filas);
@@ -110,8 +116,10 @@ public:
     
     string debugData();
     
-    ofFbo fboThumb, fboThumbPrint;
+    ofFbo fboThumb, fboThumbPrint, printerHack;
     ofFbo pantalla;
+
+    ofxImageSequenceRecorder recorder;
     
     ofxAsyncTextureLoader loader;
     shared_ptr<ofTexture> myImage;

@@ -41,6 +41,8 @@ public:
         camposPosiciones.push_back("alto");
         camposPosiciones.push_back("ocupado");
         camposPosiciones.push_back("twitt");
+        camposPosiciones.push_back("posXprint");
+        camposPosiciones.push_back("posYprint");
     
     }
     
@@ -58,6 +60,11 @@ public:
         db.ofxMySQL::close();
     }
     
+    void limpiaPosiciones(){
+        openDbConnection();
+            db.ofxMySQL::query("truncate socialPrinter.posiciones");
+        closeDbConnection();
+    }
     
     //--------------------------------------------------------------
     // comprueba si hay posiciones creadas
@@ -96,7 +103,14 @@ public:
         closeDbConnection();
     }
     
-    
+    void updateCellData(string _query){
+        openDbConnection();
+
+        db.ofxMySQL::query(_query);
+
+        closeDbConnection();
+    }
+
     //--------------------------------------------------------------
     // busca un tweet
     vector<vector<string>> getTweet(){
@@ -163,6 +177,9 @@ public:
         dataCell.push_back(ofToInt(posicionPalTweet.at(0).at(4)));
         dataCell.push_back(ofToInt(posicionPalTweet.at(0).at(5)));
         dataCell.push_back(ofToInt(posicionPalTweet.at(0).at(0)));
+
+        dataCell.push_back(ofToInt(posicionPalTweet.at(0).at(8)));
+        dataCell.push_back(ofToInt(posicionPalTweet.at(0).at(9)));
         
         
        // closeDbConnection();

@@ -7,7 +7,7 @@ var mysql      = require('mysql');
 var connection = mysql.createConnection({
   host     : 'localhost',
   user     : 'root',
-  password : 'kalandraka',
+  password : '3mpathy',
   database : 'socialPrinter'
 });
 
@@ -19,7 +19,7 @@ var T = new Twit({
   timeout_ms:           60*1000,  // optional HTTP request timeout to apply to all requests.
 })
 
-var stream = T.stream('statuses/filter', { track: 'football, soccer, basketball, hockey' })
+var stream = T.stream('statuses/filter', { track: 'zara, moda, fashion, inditex, mango' })
 
 // conectamos a twitter para pillar todos los tweets con un hastag
 stream.on('tweet', function (tweet) {
@@ -35,7 +35,8 @@ stream.on('tweet', function (tweet) {
 
   		var imagenUrl = imagenes[i].media_url;
   		var filename = imagenUrl.substring(imagenUrl.lastIndexOf('/')+1);
-  		var imagenDestino = '/Users/natxo/Desktop/socialPrinterTwitter/imagenes/'+filename;
+  		//var imagenDestino = '/home/natxo/SocialPrinterTwiiter/imagenes/'+filename;
+      var imagenDestino = filename;
 
   		var msgJson = {
         twitId: tweet.id,

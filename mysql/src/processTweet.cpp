@@ -36,6 +36,8 @@ processTweet::processTweet(){
     pantalla.begin();
     ofClear(0);
     pantalla.end();
+
+    recorder.startThread(false, true);
 }
 //--------------------------------------------------------------
 void processTweet::setImageDestinoMosaico(ofImage *img, ofImage *imgPrint){
@@ -43,7 +45,10 @@ void processTweet::setImageDestinoMosaico(ofImage *img, ofImage *imgPrint){
     imgDestinoMosaicoPrint = imgPrint;
 }
 
-
+//--------------------------------------------------------------
+void processTweet::limpiaPosiciones(){
+    dabatase.limpiaPosiciones();
+}
 //--------------------------------------------------------------
 void processTweet::setWindowSize(int w, int h){
     windowWidth = w;
@@ -72,6 +77,12 @@ void processTweet::setPhotoSizeToPrint(int _ancho, int _alto){
     fboThumbPrint.begin();
     ofClear(255,0);
     fboThumbPrint.end();
+
+    printerHack.allocate(anchoPrint+10, altoPrint+10);
+
+    printerHack.begin();
+    ofClear(255,0);
+    printerHack.end();
 }
 
 //--------------------------------------------------------------
@@ -84,6 +95,9 @@ void processTweet::createGridPositions(int columnas, int filas){
     
     int ancho = windowWidth/columnas;
     int alto = windowHeight/filas;
+
+    int anchoP = imgDestinoMosaicoPrint->getWidth()/columnas;
+    int altoP = imgDestinoMosaicoPrint->getHeight()/filas;
     
     cellSize.set(ancho, alto);
     
@@ -96,7 +110,7 @@ void processTweet::createGridPositions(int columnas, int filas){
     
     for (int r = 0; r < ofGetHeight(); r+=alto ) {
         for (int c = 0; c < ofGetWidth(); c+=ancho ) {
-            
+
             posiciones posicion(c,r,ancho,alto);
             posicionesGrid.push_back(posicion);
             
@@ -106,10 +120,26 @@ void processTweet::createGridPositions(int columnas, int filas){
             }
             cuantas++;
         }
-        
+
     }
-    
-    cout << cuantas << endl;
+
+
+
+
+    cuantas = 0;
+
+    for (int rP = 0; rP < imgDestinoMosaicoPrint->getHeight(); rP+=altoP ) {
+        for (int cP = 0; cP < imgDestinoMosaicoPrint->getWidth(); cP+=anchoP ) {
+
+            dabatase.updateCellData("UPDATE posiciones SET posXprint="+ofToString(cP)+", posYprint="+ofToString(rP)+" WHERE idposiciones = "+ofToString(cuantas+1)+ "");
+            //cout << "UPDATE posiciones SET posXprint="+ofToString(rP)+", posYprint="+ofToString(cP)+" WHERE idposiciones = "+ofToString(cuantas+1)+ "" << endl;
+            cuantas++;
+        }
+
+    }
+
+
+
     
 }
 
@@ -209,13 +239,12 @@ void processTweet::processImage(shared_ptr<ofTexture>& tex, int new_w, int new_h
     
     // seleccionas una posicion random en la bd
     
-    //getRandomPosition(int cual, int idTwittQueOcupa)
-    
     vector<int> cell = dabatase.getRandomPosition();
     
     posiciones pos(cell.at(0), cell.at(1), cell.at(2), cell.at(3));
     lastTweet.posicionEnGrid = pos;
     
+    ofPoint ptoPrint(cell.at(5),cell.at(6));
     
     bool ok = dabatase.setCellOcupada(lastTweet.recordId,cell.at(4));
 
@@ -274,23 +303,38 @@ void processTweet::processImage(shared_ptr<ofTexture>& tex, int new_w, int new_h
 
         ofSetColor(255,255,255,255);
         // dibujamos la miniatura
-        thumb.draw(0,0);
+        thumbPrint.draw(0,0);
 
         ofSetColor(255,255,255,150);
         // dibujamos la porcion de la imagen del mosaico
-        imgDestinoMosaicoPrint->drawSubsection(0, 0, nuevoAnchoP, nuevoAltoP,lastTweet.posicionEnGrid.x, lastTweet.posicionEnGrid.y);
+
+        //imgDestinoMosaicoPrint->drawSubsection(0, 0, nuevoAnchoP, nuevoAltoP,ptoPrint.x, ptoPrint.y);
+        imgDestinoMosaicoPrint->drawSubsection(0, 0, nuevoAnchoP, nuevoAltoP, ptoPrint.x, ptoPrint.y);
 
     fboThumbPrint.end();
     ofPopStyle();
 
     ofDisableAlphaBlending();
 
-    ofPixels volcadoFinalPrint;
 
-    fboThumbPrint.readToPixels(volcadoFinalPrint);
+    printerHack.begin();
+    ofClear(255,255);
+    fboThumbPrint.draw(5,5);
+    printerHack.end();
+
+    //ofPixels volcadoFinalPrint;
+    printerHack.readToPixels(pxsPrint);
+
+    //ofImage imgPrint;
+    //imgPrint.setFromPixels(pxsPrint);
+
+
 
     // guardamos la imagen pa imprimir
-    ofSaveImage(volcadoFinalPrint, "/home/natxo/SocialPrinterTwiiter/imagenes/impresion/" + lastTweet.destUrl);
+    size_t lastindex = lastTweet.destUrl.find_last_of(".");
+    string rawname = lastTweet.destUrl.substr(0, lastindex);
+
+    recorder.addFrame(pxsPrint, "/home/natxo/SocialPrinterTwiiter/imagenes/impresion/" + rawname);
 
 
 
@@ -348,7 +392,7 @@ void processTweet::processImage(shared_ptr<ofTexture>& tex, int new_w, int new_h
         // dibujamos la miniatura
         thumb.draw(0,0);
     
-        ofSetColor(255,255,255,150);
+        ofSetColor(255,255,255,120);
         // dibujamos la porcion de la imagen del mosaico
         imgDestinoMosaico->drawSubsection(0, 0, nuevoAncho, nuevoAlto,lastTweet.posicionEnGrid.x, lastTweet.posicionEnGrid.y);
     
