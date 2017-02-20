@@ -18,12 +18,10 @@ void ofApp::setup(){
     tweetStream.setPhotoSizeToPrint(432, 288);
     
     // decimos el numero de columnas y de filas
-    tweetStream.createGridPositions(40, 30);
+    tweetStream.createGridPositions(4, 3);
     
     // decimos el tamano de photo que queremos
     tweetStream.setPhotoSize(tweetStream.getGridCellSize().x, tweetStream.getGridCellSize().y);
-
-
   
     // buscamos el primero
     tweetStream.getLastTweet();
@@ -39,33 +37,10 @@ void ofApp::update(){
 void ofApp::draw(){
     ofBackground(0);
     
-    //vector<posiciones> cuadradikos = tweetStream.getPosicionesGrid();
+
     
     tweetStream.pantalla.draw(0,0);
-    
-    //imgBlend.draw(0, 0);
-    
-   /*
-    ofPushStyle();
-    
-        ofSetColor(255, 255, 255,150);
-        pepperMosaico.draw(0, 0);
-    
-    ofPopStyle();
-    
-
-        
-    ofPushStyle();
-    ofNoFill();
-    ofSetColor(100);
-    
-    for (int i = 0; i < cuadradikos.size(); i++) {
-        ofDrawRectangle(ofPoint(cuadradikos.at(i).x, cuadradikos.at(i).y), cuadradikos.at(i).w, cuadradikos.at(i).h);
-    }
-    
-    ofPopStyle();
-    */
-    
+/*
     // debig area
     ofPushStyle();
     if (tweetStream.processing) {
@@ -73,9 +48,8 @@ void ofApp::draw(){
     }else{
         ofDrawBitmapStringHighlight(tweetStream.debugData(), ofPoint(20,20), ofColor(255,100,0), ofColor(0,0,0));
     }
-    
-    
     ofPopStyle();
+*/
 
     ofSetWindowTitle("fps:" + ofToString(int(ofGetFrameRate())) + " num thumbs:" +  ofToString(tweetStream.contadorMiniaturas));
 }

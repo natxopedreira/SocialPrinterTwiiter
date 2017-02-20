@@ -81,24 +81,15 @@ private:
     
     vector<posiciones> posicionesGrid;
     
-    
     void processImage(shared_ptr<ofTexture>& tex, int new_w, int new_h);
-
-
-
     
+
 public:
-    
-    void setImageDestinoMosaico(ofImage *img, ofImage *imgPrint);
-    
-    bool processing;
     
     processTweet();
     
     void getLastTweet();
-    
     void updateProcess();
-
     void limpiaPosiciones();
     
 
@@ -107,7 +98,11 @@ public:
     
     void setPhotoSize(int _ancho, int _alto);
     void setPhotoSizeToPrint(int _ancho, int _alto);
-    
+
+    void setImageDestinoMosaico(ofImage *img, ofImage *imgPrint);
+
+    bool processing;
+
     vector<posiciones> getPosicionesGrid();
     
     ofPoint getGridCellSize();

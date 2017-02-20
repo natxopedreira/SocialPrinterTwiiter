@@ -135,19 +135,22 @@ void processTweet::createGridPositions(int columnas, int filas){
             //cout << "UPDATE posiciones SET posXprint="+ofToString(rP)+", posYprint="+ofToString(cP)+" WHERE idposiciones = "+ofToString(cuantas+1)+ "" << endl;
             cuantas++;
         }
-
     }
-
-
-
-    
 }
-
 
 
 //--------------------------------------------------------------
 vector<posiciones> processTweet::getPosicionesGrid(){
     return posicionesGrid;
+}
+
+//--------------------------------------------------------------
+void processTweet::updateProcess(){
+
+    // no esta currando y hace mas de 1 segundo desde la ultima vez
+    if (!processing && (ofGetElapsedTimeMillis()-lastTimeQuery > 2000)) {
+        getLastTweet();
+    }
 }
 
 //--------------------------------------------------------------
@@ -157,11 +160,9 @@ void processTweet::getLastTweet(){
     
     // data
     vector<vector<string> > results = dabatase.getTweet();
-    //db.ofxMySQL::getStrings(results, "twits", camposDb, "WHERE procesado='no' ", " ORDER BY idtwits DESC LIMIT 1");
-    
+
     // hay posciones
     bool freeCellsExist = dabatase.checkForFreeCells();
-    
     
     // si no hay posiciones libres en el grid para de trabajar
     if(!freeCellsExist){
@@ -184,28 +185,23 @@ void processTweet::getLastTweet(){
         lastTweet.recordId = ofToInt(results.at(0).at(0));
         lastTweet.imgUrl = results.at(0).at(2);
         lastTweet.destUrl = results.at(0).at(3);
-        
-        
-        
+
         loader.loadTextureAsync(lastTweet.imgUrl, [this] (shared_ptr<ofTexture> tex) {
             
             if (tex != NULL) {
                 // tenemos la imagen asi que lo marcamos como feito
                 processImage(tex, photoAncho, photoAlto);
+
             }else{
                 processing = false;
                 dabatase.checkTweetProcessed(lastTweet.recordId);
                 lastTimeQuery = ofGetElapsedTimeMillis();
             }
             
-            
         });
     }
-    
-    
-    
-    
-    
+
+    //cout << " results.size()" <<  results.size() << endl;
 }
 
 
@@ -223,17 +219,6 @@ string processTweet::debugData(){
 }
 
 //--------------------------------------------------------------
-void processTweet::updateProcess(){
-    
-    // no esta currando y hace mas de 1 segundo desde la ultima vez
-    if (!processing && (ofGetElapsedTimeMillis()-lastTimeQuery > 2000)) {
-        
-        getLastTweet();
-        
-    }
-}
-
-//--------------------------------------------------------------
 void processTweet::processImage(shared_ptr<ofTexture>& tex, int new_w, int new_h){
     
     
@@ -246,17 +231,42 @@ void processTweet::processImage(shared_ptr<ofTexture>& tex, int new_w, int new_h
     
     ofPoint ptoPrint(cell.at(5),cell.at(6));
     
-    bool ok = dabatase.setCellOcupada(lastTweet.recordId,cell.at(4));
+    dabatase.setCellOcupada(lastTweet.recordId,cell.at(4));
 
 
     myImage = tex;
     
 
+    // textura
+    // posicionXpantalla posicionYpantalla
+    // posicionXimpresion posicionYimpresion
+    // anchoPantalla altoPantalla
+    // anchoImpresion altoImpresion
+
+    // ofTexture
+
+    // ofPoint posicionPantalla
+    // ofPoint posicionImpresion
+
+    // ofPoint anchoPantalla
+    // ofPoint altoPantalla
+
+    // ofPoint pantallaSize
+    // ofPoint imageMosaicPrintSize
+
+    ofPixels pxsPrint;
+    tex->readToPixels(pxsPrint);
+
+    ofPixels pxs;
+    tex->readToPixels(pxs);
+
+    ofImage thumbPrint;
+    ofImage thumb;
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////
     //// RESIZE IMAGE TO PRINT ////////////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////////////////////////////
-    ofPixels pxsPrint;
-    tex->readToPixels(pxsPrint);
+
 
     float wP = pxsPrint.getWidth();
     float hP = pxsPrint.getHeight();
@@ -292,7 +302,7 @@ void processTweet::processImage(shared_ptr<ofTexture>& tex, int new_w, int new_h
 
 
     // volcamos a la imagen en bn
-    ofImage thumbPrint;
+
     thumbPrint.setFromPixels(pxsPrint);
     thumbPrint.setImageType(OF_IMAGE_GRAYSCALE);
 
@@ -325,11 +335,6 @@ void processTweet::processImage(shared_ptr<ofTexture>& tex, int new_w, int new_h
     //ofPixels volcadoFinalPrint;
     printerHack.readToPixels(pxsPrint);
 
-    //ofImage imgPrint;
-    //imgPrint.setFromPixels(pxsPrint);
-
-
-
     // guardamos la imagen pa imprimir
     size_t lastindex = lastTweet.destUrl.find_last_of(".");
     string rawname = lastTweet.destUrl.substr(0, lastindex);
@@ -342,8 +347,7 @@ void processTweet::processImage(shared_ptr<ofTexture>& tex, int new_w, int new_h
     //// RESIZE IMAGE TO SCREEEN ///////////////////////////////////////////////////////////////////////////////
     /// ////////////////////////////////////////////////////////////////////////////////////////////////////////
     ///
-    ofPixels pxs;
-    tex->readToPixels(pxs);
+
 
 
     float w = pxs.getWidth();
@@ -378,7 +382,7 @@ void processTweet::processImage(shared_ptr<ofTexture>& tex, int new_w, int new_h
     pxs.crop(destX/2, destY/2, new_w, new_h);
     
     
-    ofImage thumb;
+
     thumb.setFromPixels(pxs);
     thumb.setImageType(OF_IMAGE_GRAYSCALE);
     //thumb.setFromPixels(pxs, nuevoAncho, nuevoAlto, OF_IMAGE_GRAYSCALE);
@@ -400,16 +404,22 @@ void processTweet::processImage(shared_ptr<ofTexture>& tex, int new_w, int new_h
     ofPopStyle();
     
     ofDisableAlphaBlending();
-    
+
+
+// pintamos el fbo de la pantalla
     pantalla.begin();
             ofSetColor(255,255,255,255);
             fboThumb.draw(lastTweet.posicionEnGrid.x, lastTweet.posicionEnGrid.y);
     pantalla.end();
     
+
+
     
     contadorMiniaturas++;
     celdasOcupadas++;
     
+
+
     processing = false;
     dabatase.checkTweetProcessed(lastTweet.recordId);
     lastTimeQuery = ofGetElapsedTimeMillis();

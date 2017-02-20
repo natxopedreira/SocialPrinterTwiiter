@@ -18,7 +18,7 @@ Project{
             "src/processTweet.h",
             "src/processTweet.cpp",
             "src/bdCommands.h",
-            "src/ofxImageSequenceRecorder.h"
+            "src/ofxImageSequenceRecorder.h",
         ]
 
         // This project is using addons.make to include the addons
