@@ -1,0 +1,83 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<!--
+https://github.com/aguidrevitch/jquery-file-upload-middleware/blob/master/examples/views/form.html
+-->
+<head>
+    <title></title>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+	
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    
+    <!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+	<!-- Optional theme -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+<!-- Latest compiled and minified JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+</head>
+
+<body>
+   	<div class="container">
+   	<br >
+   	   	<h1>Panel de control Social Printer </h1>
+
+		<nav class="navbar navbar-inverse">
+		  <div class="container-fluid">
+
+		    <ul class="nav navbar-nav">
+		      <li class="active"><a href="/uploadFotos">Imagenes app</a></li>
+		      <li ><a href="/">App preferences</a></li>
+		    </ul>
+		  </div>
+		</nav>
+    <form ref='uploadForm' 
+      id='uploadForm' 
+      action='/upload' 
+      method='post' 
+      encType="multipart/form-data">
+      		<input type="hidden" id="idpreferencias" value="{{data.idpreferences}}" name="">
+
+      		<p>
+      			Las imagenes tienen que ser en formato png, al hacerlas en photoshop,se componen de dos capas: una superior con overlay al 75% y debajo otra con alpha al 35%
+      		</p>
+
+
+
+      		<h2> Imagen para la pantalla</h2>
+			<p> esta es la imagen que se usara para mostrar en pantalla, tiene que tener la misma resolucion que la de la pantalla</p>
+			<img src="{{data.screen_file}}" width="25%" height="25%">
+			<div class="form-group">
+				<label for="consumer_key">imagen pantalla</label>
+    			<input type="file" name="imagen_pantalla" />
+			</div>
+
+			<br><br>
+
+      		<h2> Imagen para la impresion</h2>
+			<p> es la imagen que se usa para imprimir las fotos del mosaico, las medidas tienen que coincidir con:
+			<br><br>
+			+ ancho = 432 * numero de columnas<br>
+			+ alto = 288 * numero de filas
+			<br>
+			</p>
+			<img src="{{data.print_file}}" width="25%" height="25%">
+
+			<div class="form-group">
+				<label for="consumer_key">imagen pantalla</label>
+    			<input type="file" name="imagen_impresion" />
+			</div>
+<br><br>
+<input type='submit' value='Upload!' />
+<br>
+    </form> 
+
+
+   	</div>
+
+</body>

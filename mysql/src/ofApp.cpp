@@ -6,6 +6,17 @@ void ofApp::setup(){
 
     //tweetStream.limpiaPosiciones();
 
+    /*
+        para imprimir hay que meter a mano el tamaño de las impresiones y
+        que estas al multiplicarlo por el numero de filas/columnas coincidan
+        con el tamaño de la imagen pa imprimir
+
+
+        pa pantalla no hay que hacer nada solo decir el numero de filas y columnas y el sistema calcula el tamaño de las casillas
+
+    */
+
+
     // imagen a componer
     pepperMosaico.loadImage("coca-cola-logo-splash.png");
     pepperMosaicoToPrint.loadImage("coca-cola-logo-splash-print.png");
@@ -15,8 +26,10 @@ void ofApp::setup(){
     tweetStream.setWindowSize(1920,1200);
 
     // decimos el tamano de photo paImprimir
+    // tiene que coincidir en que el  acho  de esta por el numero de colunmanas sea igual al ancho de la pepperMosaicoToPrint
     tweetStream.setPhotoSizeToPrint(432, 288);
     
+    // para pantalla aqui calcula el solo el tamaño de las casillas
     // decimos el numero de columnas y de filas
     tweetStream.createGridPositions(4, 3);
     
