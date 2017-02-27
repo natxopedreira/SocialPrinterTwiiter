@@ -77,7 +77,7 @@ private:
     ofPoint cellSize;
     
     tweet lastTweet;
-    bdCommands dabatase;
+
     
     vector<posiciones> posicionesGrid;
     
@@ -85,6 +85,8 @@ private:
     
 
 public:
+
+    bdCommands dabatase;
     
     processTweet();
     

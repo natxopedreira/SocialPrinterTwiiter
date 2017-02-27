@@ -21,11 +21,18 @@ private:
     vector<string> camposDb;
     vector<string> camposPosiciones;
     
-
+    vector<string> camposPreferencias;
     
 public:
     
     bdCommands(){
+
+        camposPreferencias.push_back("screen_rows");
+        camposPreferencias.push_back("screen_cols");
+        camposPreferencias.push_back("screen_file");
+        camposPreferencias.push_back("cell_print_width");
+        camposPreferencias.push_back("cell_print_height");
+        camposPreferencias.push_back("print_file");
         
         camposDb.push_back("idtwits");
         camposDb.push_back("twitId");
@@ -110,6 +117,19 @@ public:
 
         closeDbConnection();
     }
+
+
+    vector<vector<string>> getPreferences(){
+        openDbConnection();
+
+        vector<vector<string> > results;
+        db.ofxMySQL::getStrings(results, "preferences", camposPreferencias, " ", " LIMIT 1");
+
+        closeDbConnection();
+
+        return results;
+    }
+
 
     //--------------------------------------------------------------
     // busca un tweet

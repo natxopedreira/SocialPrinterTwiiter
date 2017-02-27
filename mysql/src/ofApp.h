@@ -4,7 +4,7 @@
 #include "processTweet.h"
 
 
-
+#define BDPREFERENCES
 
 class ofApp : public ofBaseApp{
 
