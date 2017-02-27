@@ -1,10 +1,8 @@
-CREATE DATABASE  IF NOT EXISTS `socialPrinter` /*!40100 DEFAULT CHARACTER SET utf8 COLLATE utf8_bin */;
-USE `socialPrinter`;
--- MySQL dump 10.13  Distrib 5.7.17, for macos10.12 (x86_64)
+-- MySQL dump 10.13  Distrib 5.7.17, for Linux (x86_64)
 --
 -- Host: localhost    Database: socialPrinter
 -- ------------------------------------------------------
--- Server version	5.7.17
+-- Server version	5.7.17-0ubuntu0.16.04.1
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -33,9 +31,36 @@ CREATE TABLE `posiciones` (
   `alto` varchar(45) COLLATE utf8_bin DEFAULT NULL,
   `ocupado` varchar(45) COLLATE utf8_bin DEFAULT NULL,
   `twitt` varchar(45) COLLATE utf8_bin DEFAULT NULL,
+  `posXprint` varchar(45) COLLATE utf8_bin DEFAULT '0',
+  `posYprint` varchar(45) COLLATE utf8_bin DEFAULT '0',
   PRIMARY KEY (`idposiciones`),
   UNIQUE KEY `id_UNIQUE` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=321 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `preferences`
+--
+
+DROP TABLE IF EXISTS `preferences`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `preferences` (
+  `idpreferences` int(11) NOT NULL AUTO_INCREMENT,
+  `twitter_consumer_key` varchar(90) COLLATE utf8_bin DEFAULT NULL,
+  `twitter_consumer_secret` varchar(90) COLLATE utf8_bin DEFAULT NULL,
+  `twitter_access_token` varchar(90) COLLATE utf8_bin DEFAULT NULL,
+  `twitter_access_secret` varchar(90) COLLATE utf8_bin DEFAULT NULL,
+  `twitter_hastag_search` varchar(45) COLLATE utf8_bin DEFAULT NULL,
+  `screen_rows` varchar(45) COLLATE utf8_bin DEFAULT NULL,
+  `screen_cols` varchar(45) COLLATE utf8_bin DEFAULT NULL,
+  `screen_file` varchar(90) COLLATE utf8_bin DEFAULT NULL,
+  `cell_print_width` varchar(45) COLLATE utf8_bin DEFAULT NULL,
+  `cell_print_height` varchar(45) COLLATE utf8_bin DEFAULT NULL,
+  `print_file` varchar(90) COLLATE utf8_bin DEFAULT NULL,
+  PRIMARY KEY (`idpreferences`),
+  UNIQUE KEY `idpreferences_UNIQUE` (`idpreferences`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -54,7 +79,7 @@ CREATE TABLE `twits` (
   PRIMARY KEY (`idtwits`),
   UNIQUE KEY `idtwits_UNIQUE` (`idtwits`),
   UNIQUE KEY `twit_ID_UNIQUE` (`twitId`)
-) ENGINE=InnoDB AUTO_INCREMENT=22433 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=14887 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -66,4 +91,4 @@ CREATE TABLE `twits` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-02-14 21:35:16
+-- Dump completed on 2017-02-27 14:53:53
