@@ -12,6 +12,7 @@ var mustacheExpress = require('mustache-express');
 var bodyParser = require('body-parser');
 var fileUpload = require('express-fileupload');
 var mv = require('mv');
+var Q = require("q");
 
 var twitter = new tw('eG1KKlVy5oOX3jB3KJ1TmtE7N', // consumer_key
                       'eDJODgk8KsrOOZVnyUgJG0GhYDrl2aFrbrbeOaLRjMiGGGqBrM', // consumer_secret
@@ -86,8 +87,7 @@ function storeTwitt(msgJson){
     });
 }
 
-// configure =============================================================
-// Add this line below
+//  =============================================================
 
 
 app.use(bodyParser.urlencoded({ extended: false })) 
@@ -102,6 +102,8 @@ app.use(express.static(__dirname + '/WebPanelPublic/uploads')); // set static fo
 // configure upload middleware
 app.use(fileUpload());
 
+
+//  =============================================================
 // raiz, mostramos las preferencias
 app.get('/', function (req, res) {
 
@@ -112,6 +114,8 @@ app.get('/', function (req, res) {
 
 })
 
+
+//  =============================================================
 // pagina para actualizar las fotos
 app.get('/uploadFotos', function (req, res) {
   dbCon.query('SELECT * FROM preferences', function(err, rows){
@@ -119,6 +123,8 @@ app.get('/uploadFotos', function (req, res) {
   });
 })
 
+
+//  =============================================================
 // subimos las iamgenes y actualizamos la db
 app.post('/upload', function(req, res) {
   if (!req.files)
@@ -164,6 +170,7 @@ app.post('/upload', function(req, res) {
 });
 
 
+//  =============================================================
 // actualizamos las preferencias
 app.post('/updatePreferences',function(req, res){
 
@@ -182,6 +189,75 @@ app.post('/updatePreferences',function(req, res){
 
 })
 
+
+
+//  =============================================================
+// estadisticas
+app.get('/chartsData', function (req, res) {
+  var dataJson=[];
+
+
+  function cuantosTweets(){
+    var defered = Q.defer();
+
+    dbCon.query("SELECT count(*) as total from twits",defered.makeNodeResolver());
+    return defered.promise;
+  }
+
+  function cuantosProcesados(){
+    var defered = Q.defer();
+
+    dbCon.query("SELECT count(*) as totalProcesado from twits WHERE procesado='si' ",defered.makeNodeResolver());
+    return defered.promise;
+  }
+
+  function cuantasCasillas(){
+    var defered = Q.defer();
+
+    dbCon.query("SELECT count(*) as casillas from posiciones ",defered.makeNodeResolver());
+    return defered.promise;
+
+  }
+
+  function cuantasCasillasLibres(){
+    var defered = Q.defer();
+
+    dbCon.query("SELECT count(*) as casillasLibres from posiciones WHERE ocupado = 'no'",defered.makeNodeResolver());
+    return defered.promise;
+    
+  }
+
+
+    Q.all([cuantosTweets(),cuantosProcesados(),cuantasCasillas(),cuantasCasillasLibres()]).then(function(results){
+        console.log(results[0][0][0]);
+        console.log(results[1][0][0]);
+
+        if(results[0][0][0]){
+          dataJson.push({'total':results[0][0][0].total});
+        }
+
+        if(results[1][0][0]){
+          dataJson.push({'totalProcesado':results[1][0][0].totalProcesado});
+        }   
+
+        if(results[2][0][0]){
+          dataJson.push({'casillas':results[2][0][0].casillas});
+        } 
+
+        if(results[3][0][0]){
+          dataJson.push({'casillasLibres':results[3][0][0].casillasLibres});
+        } 
+
+        res.render('stadisticas.html',  {data : dataJson[0], totalProcesado: dataJson[1], casillas: dataJson[2], casillasLibres: dataJson[3], ocupadas: dataJson[2]-dataJson[3]} );
+        //res.send(JSON.stringify(dataJson));
+        // Hint : your third query would go here
+    });
+
+
+
+});
+
+//  =============================================================
 // iniciamos el webserver
 var server = app.listen(8081, function () {
    var host = server.address().address

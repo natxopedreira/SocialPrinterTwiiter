@@ -12,7 +12,6 @@ void ofApp::setup(){
     string print_file = "";
 
 
-
 #ifdef BDPREFERENCES
         vector<vector<string> > preferencias = tweetStream.dabatase.getPreferences();
 

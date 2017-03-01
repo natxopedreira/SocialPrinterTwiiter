@@ -75,21 +75,30 @@ public:
     
     //--------------------------------------------------------------
     // comprueba si hay posiciones creadas
-    bool chekIfExitstPositionCells(){
+    bool chekIfExitstPositionCells(int posicion){
         
         bool position = false;
         vector<vector<string> > pos;
         
-        db.ofxMySQL::getStrings(pos, "socialPrinter.posiciones", camposPosiciones,"","");
+        db.ofxMySQL::getStrings(pos, "socialPrinter.posiciones", camposPosiciones," where idposiciones='"+ofToString(posicion)+"' ","");
         
         if (pos.size()>0) {
             position = true;
         }
         
+
+        //cout << pos.size() << endl;
         return position;
     }
-    
-    
+
+    //--------------------------------------------------------------
+    int existePosicion(int posicion){
+        int salida = 0;
+        openDbConnection();
+        salida =  db.ofxMySQL::queryCuantasHay("SELECT * from posiciones where idposiciones = '"+ofToString(posicion)+"'");
+        closeDbConnection();
+        return salida;
+    }
 
     //--------------------------------------------------------------
     // crea cell

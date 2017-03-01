@@ -101,22 +101,24 @@ void processTweet::createGridPositions(int columnas, int filas){
     
     cellSize.set(ancho, alto);
     
-    bool positionCellsExists = dabatase.chekIfExitstPositionCells();
-    
-    
-    
+
     int cuantas = 0;
     posicionesGrid.clear();
+
+    bool hasCrasheado = false;
     
     for (int r = 0; r < ofGetHeight(); r+=alto ) {
         for (int c = 0; c < ofGetWidth(); c+=ancho ) {
 
             posiciones posicion(c,r,ancho,alto);
             posicionesGrid.push_back(posicion);
-            
-            if(!positionCellsExists){
-                
+
+            if(dabatase.existePosicion(cuantas+1)==0){
+
+                //cout << "no existe" << endl;
                 dabatase.setCellData(cuantas,c,r,ancho,alto,"no",0);
+            }else{
+                hasCrasheado = true;
             }
             cuantas++;
         }
@@ -132,9 +134,22 @@ void processTweet::createGridPositions(int columnas, int filas){
         for (int cP = 0; cP < imgDestinoMosaicoPrint->getWidth(); cP+=anchoP ) {
 
             dabatase.updateCellData("UPDATE posiciones SET posXprint="+ofToString(cP)+", posYprint="+ofToString(rP)+" WHERE idposiciones = "+ofToString(cuantas+1)+ "");
-            //cout << "UPDATE posiciones SET posXprint="+ofToString(rP)+", posYprint="+ofToString(cP)+" WHERE idposiciones = "+ofToString(cuantas+1)+ "" << endl;
             cuantas++;
         }
+    }
+
+
+    //+////////////////////////////////////////////////////////////////////////////////+//
+    // si habia ya alguna miniatura es porque has reventando, entonces pinta el fbo con la imagen de backup
+
+    if(hasCrasheado){
+        ofImage backu;
+        backu.load("/home/natxo/SocialPrinterTwiiter/imagenes/backupReinicio/backupFbo.png");
+
+        pantalla.begin();
+        //ofClear(0);
+        backu.draw(0,0);
+        pantalla.end();
     }
 }
 
@@ -413,6 +428,11 @@ void processTweet::processImage(shared_ptr<ofTexture>& tex, int new_w, int new_h
     pantalla.end();
     
 
+    //  guardamos el fbo de la pantalla por seascaso
+    ofPixels pxsPantalla;
+    pantalla.readToPixels(pxsPantalla);
+    pxsPantalla.setNumChannels(3);
+    ofSaveImage(pxsPantalla, "/home/natxo/SocialPrinterTwiiter/imagenes/backupReinicio/backupFbo.png");
 
     
     contadorMiniaturas++;
