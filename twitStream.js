@@ -53,7 +53,9 @@ twitter.stream.on('tweet', function (tweet) {
 
           if(extension== ".jpg" || extension== ".jpeg" || extension== ".png"){
 
-            var msgJson = { twitId: tweet.id, urlPhoto: imagenUrl, destPhoto: imagenDestino, procesado:'no' }
+            console.log(tweet.user.screen_name)
+
+            var msgJson = { twitId: tweet.id, urlPhoto: imagenUrl, destPhoto: imagenDestino, procesado:'no', screenname: tweet.user.screen_name }
           
             storeTwitt(msgJson);
           
@@ -88,8 +90,9 @@ function storeTwitt(msgJson){
 }
 
 //  =============================================================
-
-
+//  =============================================================
+//  =============================================================
+//  =============================================================
 app.use(bodyParser.urlencoded({ extended: false })) 
 app.use(bodyParser.json());
 
@@ -104,6 +107,7 @@ app.use(fileUpload());
 
 
 //  =============================================================
+//  =============================================================
 // raiz, mostramos las preferencias
 app.get('/', function (req, res) {
 
@@ -116,6 +120,7 @@ app.get('/', function (req, res) {
 
 
 //  =============================================================
+//  =============================================================
 // pagina para actualizar las fotos
 app.get('/uploadFotos', function (req, res) {
   dbCon.query('SELECT * FROM preferences', function(err, rows){
@@ -124,6 +129,7 @@ app.get('/uploadFotos', function (req, res) {
 })
 
 
+//  =============================================================
 //  =============================================================
 // subimos las iamgenes y actualizamos la db
 app.post('/upload', function(req, res) {
@@ -171,6 +177,7 @@ app.post('/upload', function(req, res) {
 
 
 //  =============================================================
+//  =============================================================
 // actualizamos las preferencias
 app.post('/updatePreferences',function(req, res){
 
@@ -190,7 +197,7 @@ app.post('/updatePreferences',function(req, res){
 })
 
 
-
+//  =============================================================
 //  =============================================================
 // estadisticas
 app.get('/chartsData', function (req, res) {
@@ -257,6 +264,8 @@ app.get('/chartsData', function (req, res) {
 
 });
 
+
+//  =============================================================
 //  =============================================================
 // iniciamos el webserver
 var server = app.listen(8081, function () {
